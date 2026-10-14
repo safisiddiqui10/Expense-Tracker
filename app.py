@@ -1,6 +1,12 @@
-from flask import Flask, render_template, session, redirect, url_for, request
+from flask import Flask, render_template, session, redirect, url_for, request, abort
 from werkzeug.security import check_password_hash
 from database.db import get_db, init_db, seed_db
+from database.queries import (
+    get_user_by_id,
+    get_recent_transactions,
+    get_summary_stats,
+    get_category_breakdown,
+)
 
 app = Flask(__name__)
 app.secret_key = 'spendly-dev-secret-key'
@@ -66,39 +72,14 @@ def profile():
     if not session.get("user_id"):
         return redirect(url_for("login"))
 
-    user = {
-        "name": "Demo User",
-        "email": "demo@spendly.com",
-        "initials": "DU",
-        "member_since": "October 2026",
-    }
+    user = get_user_by_id(session["user_id"])
+    if user is None:
+        abort(404)
 
-    expenses = [
-        {"id": 1, "date": "2026-10-14", "description": "Groceries",       "category": "Food",          "amount": 18.40},
-        {"id": 2, "date": "2026-10-13", "description": "Miscellaneous",    "category": "Other",         "amount": 8.75},
-        {"id": 3, "date": "2026-10-11", "description": "Clothing",         "category": "Shopping",      "amount": 89.99},
-        {"id": 4, "date": "2026-10-09", "description": "Cinema tickets",   "category": "Entertainment", "amount": 25.00},
-        {"id": 5, "date": "2026-10-07", "description": "Pharmacy",         "category": "Health",        "amount": 45.00},
-        {"id": 6, "date": "2026-10-05", "description": "Electricity bill", "category": "Bills",         "amount": 120.00},
-        {"id": 7, "date": "2026-10-03", "description": "Monthly bus pass", "category": "Transport",     "amount": 35.00},
-        {"id": 8, "date": "2026-10-01", "description": "Lunch at cafe",    "category": "Food",          "amount": 12.50},
-    ]
+    expenses = get_recent_transactions(session["user_id"])
 
-    total = sum(e["amount"] for e in expenses)
-    count = len(expenses)
-
-    cat_totals = {}
-    for e in expenses:
-        cat_totals[e["category"]] = cat_totals.get(e["category"], 0) + e["amount"]
-
-    top_category = max(cat_totals, key=cat_totals.get) if cat_totals else "—"
-
-    categories = [
-        {"name": cat, "total": round(amt, 2), "pct": round(amt / total * 100) if total else 0}
-        for cat, amt in sorted(cat_totals.items(), key=lambda x: -x[1])
-    ]
-
-    stats = {"total": round(total, 2), "count": count, "top_category": top_category}
+    stats = get_summary_stats(session["user_id"])
+    categories = get_category_breakdown(session["user_id"])
 
     return render_template("profile.html", user=user, expenses=expenses, stats=stats, categories=categories)
 

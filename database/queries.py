@@ -31,6 +31,43 @@ def get_recent_transactions(user_id, limit=10):
     return [dict(r) for r in rows]
 
 
+def get_distinct_categories(user_id):
+    conn = get_db()
+    rows = conn.execute(
+        "SELECT DISTINCT category FROM expenses WHERE user_id = ? ORDER BY category",
+        (user_id,),
+    ).fetchall()
+    conn.close()
+    return [r["category"] for r in rows]
+
+
+def get_filtered_transactions(user_id, category=None, date_from=None, date_to=None):
+    clauses = ["user_id = ?"]
+    params = [user_id]
+
+    if category:
+        clauses.append("category = ?")
+        params.append(category)
+    if date_from:
+        clauses.append("date >= ?")
+        params.append(date_from)
+    if date_to:
+        clauses.append("date <= ?")
+        params.append(date_to)
+
+    where = " AND ".join(clauses)
+    limit_sql = " LIMIT 10" if len(clauses) == 1 else ""
+    sql = (
+        f"SELECT id, date, description, category, amount FROM expenses "
+        f"WHERE {where} ORDER BY date DESC, id DESC{limit_sql}"
+    )
+
+    conn = get_db()
+    rows = conn.execute(sql, params).fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
+
+
 def get_summary_stats(user_id):
     conn = get_db()
     row = conn.execute(

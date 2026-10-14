@@ -55,6 +55,38 @@
     <!-- Transaction history -->
     <section class="profile-section">
       <h2 class="section-title">Transaction History</h2>
+
+      <!-- Filter form -->
+      <form class="filter-form" method="get" action="{{ url_for('profile') }}">
+        <div class="filter-row">
+          <div class="filter-field">
+            <label class="filter-label" for="filter-category">Category</label>
+            <select class="filter-select" id="filter-category" name="category">
+              <option value="">All Categories</option>
+              {% for cat in filter_categories %}
+              <option value="{{ cat }}" {% if cat == category %}selected{% endif %}>{{ cat }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="filter-field">
+            <label class="filter-label" for="filter-date-from">From</label>
+            <input class="filter-input" type="date" id="filter-date-from" name="date_from" value="{{ date_from }}">
+          </div>
+          <div class="filter-field">
+            <label class="filter-label" for="filter-date-to">To</label>
+            <input class="filter-input" type="date" id="filter-date-to" name="date_to" value="{{ date_to }}">
+          </div>
+          <div class="filter-actions">
+            <button class="btn-primary filter-btn" type="submit">Apply</button>
+            <a class="btn-ghost filter-btn" href="{{ url_for('profile') }}">Clear</a>
+          </div>
+        </div>
+      </form>
+
+      {% if filter_active %}
+      <p class="filter-notice">Filtered results: {{ expenses|length }} row{{ 's' if expenses|length != 1 else '' }}</p>
+      {% endif %}
+
       {% if expenses %}
       <div class="expense-table-wrap">
         <table class="expense-table">

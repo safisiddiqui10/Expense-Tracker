@@ -1,0 +1,396 @@
+/* ------------------------------------------------------------------ */
+/* profile.css — Profile page styles                                   */
+/* ------------------------------------------------------------------ */
+
+/* ------------------------------------------------------------------ */
+/* Category colour tokens                                              */
+/* ------------------------------------------------------------------ */
+
+:root {
+    --cat-food:                var(--accent-2);
+    --cat-food-light:          var(--accent-2-light);
+    --cat-transport:           #3b82f6;
+    --cat-transport-light:     #eff6ff;
+    --cat-bills:               #8b5cf6;
+    --cat-bills-light:         #f5f3ff;
+    --cat-health:              #0d9488;
+    --cat-health-light:        #f0fdfa;
+    --cat-entertainment:       #e11d48;
+    --cat-entertainment-light: #fff1f2;
+    --cat-shopping:            #4f46e5;
+    --cat-shopping-light:      #eef2ff;
+    --cat-other:               var(--ink-muted);
+    --cat-other-light:         var(--paper-warm);
+}
+
+/* ------------------------------------------------------------------ */
+/* Page layout                                                         */
+/* ------------------------------------------------------------------ */
+
+.profile-page {
+    padding: 3rem 2rem 5rem;
+}
+
+.profile-inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.profile-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 3vw, 2.5rem);
+    color: var(--ink);
+}
+
+/* ------------------------------------------------------------------ */
+/* Section card wrapper                                                */
+/* ------------------------------------------------------------------ */
+
+.profile-section {
+    background: var(--paper-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 2rem;
+}
+
+.section-title {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    color: var(--ink);
+    margin-bottom: 1.5rem;
+}
+
+/* ------------------------------------------------------------------ */
+/* Section 1 — User card                                               */
+/* ------------------------------------------------------------------ */
+
+.user-card {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.avatar {
+    flex-shrink: 0;
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--paper-card);
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0.04em;
+    user-select: none;
+}
+
+.user-card-body {
+    flex: 1;
+}
+
+.user-name {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    color: var(--ink);
+    margin-bottom: 0.2rem;
+}
+
+.user-email {
+    font-size: 0.9rem;
+    color: var(--ink-muted);
+    margin-bottom: 0.15rem;
+}
+
+.user-since {
+    font-size: 0.8rem;
+    color: var(--ink-faint);
+}
+
+.user-card-actions {
+    flex-shrink: 0;
+}
+
+/* ------------------------------------------------------------------ */
+/* Section 2 — Stats row                                               */
+/* ------------------------------------------------------------------ */
+
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.stat-card {
+    background: var(--paper);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-md);
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.stat-value {
+    font-family: var(--font-display);
+    font-size: 1.75rem;
+    color: var(--ink);
+    line-height: 1.2;
+}
+
+.stat-value--category {
+    font-size: 1.3rem;
+}
+
+.stat-sub {
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+}
+
+/* ------------------------------------------------------------------ */
+/* Section 3 — Expense table                                           */
+/* ------------------------------------------------------------------ */
+
+.expense-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.expense-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.expense-table th {
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 0.6rem 1rem;
+    border-bottom: 2px solid var(--border);
+}
+
+.expense-table td {
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--border-soft);
+    color: var(--ink-soft);
+    vertical-align: middle;
+}
+
+.expense-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.expense-table tbody tr:hover {
+    background: var(--paper);
+}
+
+.col-date {
+    white-space: nowrap;
+    color: var(--ink-muted);
+    font-size: 0.85rem;
+}
+
+.col-desc {
+    max-width: 240px;
+}
+
+.col-amount {
+    text-align: right;
+    font-weight: 500;
+    color: var(--ink);
+    white-space: nowrap;
+}
+
+.col-actions {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.action-link {
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 0.2rem 0.55rem;
+    border-radius: var(--radius-sm);
+    transition: background 0.15s, color 0.15s;
+    text-decoration: none;
+}
+
+.action-link--edit {
+    color: var(--accent);
+}
+
+.action-link--edit:hover {
+    background: var(--accent-light);
+}
+
+.action-link--delete {
+    color: var(--danger);
+    margin-left: 0.25rem;
+}
+
+.action-link--delete:hover {
+    background: var(--danger-light);
+}
+
+/* ------------------------------------------------------------------ */
+/* Category badges                                                     */
+/* ------------------------------------------------------------------ */
+
+.cat-badge {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.2rem 0.65rem;
+    border-radius: 999px;
+    white-space: nowrap;
+    letter-spacing: 0.02em;
+}
+
+.cat-badge--food          { color: var(--cat-food);          background: var(--cat-food-light); }
+.cat-badge--transport     { color: var(--cat-transport);     background: var(--cat-transport-light); }
+.cat-badge--bills         { color: var(--cat-bills);         background: var(--cat-bills-light); }
+.cat-badge--health        { color: var(--cat-health);        background: var(--cat-health-light); }
+.cat-badge--entertainment { color: var(--cat-entertainment); background: var(--cat-entertainment-light); }
+.cat-badge--shopping      { color: var(--cat-shopping);      background: var(--cat-shopping-light); }
+.cat-badge--other         { color: var(--cat-other);         background: var(--cat-other-light); }
+
+/* ------------------------------------------------------------------ */
+/* Section 4 — Category breakdown                                      */
+/* ------------------------------------------------------------------ */
+
+.breakdown-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.breakdown-row {
+    display: grid;
+    grid-template-columns: 110px 1fr 80px;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.breakdown-name {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--ink-soft);
+}
+
+.breakdown-track {
+    height: 8px;
+    background: var(--border-soft);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.breakdown-bar {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.6s ease;
+}
+
+.breakdown-bar--food          { background: var(--cat-food); }
+.breakdown-bar--transport     { background: var(--cat-transport); }
+.breakdown-bar--bills         { background: var(--cat-bills); }
+.breakdown-bar--health        { background: var(--cat-health); }
+.breakdown-bar--entertainment { background: var(--cat-entertainment); }
+.breakdown-bar--shopping      { background: var(--cat-shopping); }
+.breakdown-bar--other         { background: var(--cat-other); }
+
+.breakdown-amount {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--ink-muted);
+    text-align: right;
+    white-space: nowrap;
+}
+
+/* ------------------------------------------------------------------ */
+/* Empty state                                                         */
+/* ------------------------------------------------------------------ */
+
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+}
+
+.empty-state-text {
+    font-size: 0.95rem;
+    color: var(--ink-muted);
+    margin-bottom: 1.25rem;
+}
+
+/* ------------------------------------------------------------------ */
+/* Responsive — 900px                                                  */
+/* ------------------------------------------------------------------ */
+
+@media (max-width: 900px) {
+    .profile-page {
+        padding: 2rem 1.5rem 4rem;
+    }
+
+    .stats-row {
+        grid-template-columns: 1fr;
+    }
+
+    .user-card {
+        flex-wrap: wrap;
+    }
+
+    .user-card-actions {
+        width: 100%;
+    }
+
+    .breakdown-row {
+        grid-template-columns: 90px 1fr 70px;
+    }
+}
+
+/* ------------------------------------------------------------------ */
+/* Responsive — 600px                                                  */
+/* ------------------------------------------------------------------ */
+
+@media (max-width: 600px) {
+    .profile-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .profile-section {
+        padding: 1.25rem;
+    }
+
+    .expense-table th.col-date,
+    .expense-table td.col-date {
+        display: none;
+    }
+
+    .breakdown-row {
+        grid-template-columns: 80px 1fr 65px;
+        gap: 0.5rem;
+    }
+}

@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile — Budgetly{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="profile-page">
+  <div class="profile-inner">
+
+    <div class="profile-header">
+      <h1 class="profile-title">My Profile</h1>
+      <a href="{{ url_for('add_expense') }}" class="btn-primary">+ Add expense</a>
+    </div>
+
+    <!-- User info card -->
+    <section class="profile-section">
+      <div class="user-card">
+        <div class="avatar">{{ user.initials }}</div>
+        <div class="user-card-body">
+          <h2 class="user-name">{{ user.name }}</h2>
+          <p class="user-email">{{ user.email }}</p>
+          <p class="user-since">Member since {{ user.member_since }}</p>
+        </div>
+        <div class="user-card-actions">
+          <a href="{{ url_for('logout') }}" class="btn-ghost">Sign out</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Summary stats -->
+    <section class="profile-section">
+      <h2 class="section-title">Overview</h2>
+      <div class="stats-row">
+        <div class="stat-card">
+          <span class="stat-label">Total spent</span>
+          <span class="stat-value">${{ "%.2f"|format(stats.total) }}</span>
+          <span class="stat-sub">all time</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Transactions</span>
+          <span class="stat-value">{{ stats.count }}</span>
+          <span class="stat-sub">entries logged</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Top category</span>
+          <span class="stat-value stat-value--category">{{ stats.top_category }}</span>
+          <span class="stat-sub">highest spending</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Transaction history -->
+    <section class="profile-section">
+      <h2 class="section-title">Transaction History</h2>
+      {% if expenses %}
+      <div class="expense-table-wrap">
+        <table class="expense-table">
+          <thead>
+            <tr>
+              <th class="col-date">Date</th>
+              <th>Description</th>
+              <th>Category</th>
+              <th class="col-amount">Amount</th>
+              <th class="col-actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for expense in expenses %}
+            <tr>
+              <td class="col-date">{{ expense.date }}</td>
+              <td class="col-desc">{{ expense.description }}</td>
+              <td>
+                <span class="cat-badge cat-badge--{{ expense.category|lower }}">
+                  {{ expense.category }}
+                </span>
+              </td>
+              <td class="col-amount">${{ "%.2f"|format(expense.amount) }}</td>
+              <td class="col-actions">
+                <a href="{{ url_for('edit_expense', id=expense.id) }}" class="action-link action-link--edit">Edit</a>
+                <a href="{{ url_for('delete_expense', id=expense.id) }}" class="action-link action-link--delete">Delete</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="empty-state">
+        <p class="empty-state-text">No expenses logged yet.</p>
+        <a href="{{ url_for('add_expense') }}" class="btn-primary">Add your first expense</a>
+      </div>
+      {% endif %}
+    </section>
+
+    <!-- Category breakdown -->
+    <section class="profile-section">
+      <h2 class="section-title">Category Breakdown</h2>
+      {% if categories %}
+      <div class="breakdown-list">
+        {% for cat in categories %}
+        <div class="breakdown-row">
+          <span class="breakdown-name">{{ cat.name }}</span>
+          <div class="breakdown-track">
+            <div class="breakdown-bar breakdown-bar--{{ cat.name|lower }}"
+                 style="width: {{ cat.pct }}%"></div>
+          </div>
+          <span class="breakdown-amount">${{ "%.2f"|format(cat.total) }}</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty-state">
+        <p class="empty-state-text">No category data available.</p>
+      </div>
+      {% endif %}
+    </section>
+
+  </div>
+</div>
+{% endblock %}

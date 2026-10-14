@@ -1,9 +1,12 @@
+from datetime import datetime
+
 from flask import Flask, render_template, session, redirect, url_for, request, abort
 from werkzeug.security import check_password_hash
 from database.db import get_db, init_db, seed_db
 from database.queries import (
     get_user_by_id,
-    get_recent_transactions,
+    get_filtered_transactions,
+    get_distinct_categories,
     get_summary_stats,
     get_category_breakdown,
 )
@@ -76,12 +79,49 @@ def profile():
     if user is None:
         abort(404)
 
-    expenses = get_recent_transactions(session["user_id"])
+    category = request.args.get("category", "").strip()
+    date_from = request.args.get("date_from", "").strip()
+    date_to = request.args.get("date_to", "").strip()
+
+    if date_from:
+        try:
+            datetime.strptime(date_from, "%Y-%m-%d")
+        except ValueError:
+            date_from = ""
+    if date_to:
+        try:
+            datetime.strptime(date_to, "%Y-%m-%d")
+        except ValueError:
+            date_to = ""
+
+    filter_active = bool(category or date_from or date_to)
+
+    expenses = get_filtered_transactions(
+        session["user_id"],
+        category or None,
+        date_from or None,
+        date_to or None,
+    )
 
     stats = get_summary_stats(session["user_id"])
     categories = get_category_breakdown(session["user_id"])
+    filter_categories = get_distinct_categories(session["user_id"])
 
-    return render_template("profile.html", user=user, expenses=expenses, stats=stats, categories=categories)
+    if category and category not in filter_categories:
+        category = ""
+
+    return render_template(
+        "profile.html",
+        user=user,
+        expenses=expenses,
+        stats=stats,
+        categories=categories,
+        filter_categories=filter_categories,
+        filter_active=filter_active,
+        category=category,
+        date_from=date_from,
+        date_to=date_to,
+    )
 
 
 @app.route("/expenses/add")

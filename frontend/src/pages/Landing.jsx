@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import '../styles/landing.css'
 
@@ -7,12 +7,11 @@ const VIDEO_URL = 'https://www.youtube.com/embed/dQw4w9WgXcQ'
 
 export default function Landing() {
   const { user } = useAuth()
-  const navigate = useNavigate()
   const [isOpen, setIsOpen] = useState(false)
 
-  useEffect(() => {
-    if (user) navigate('/profile', { replace: true })
-  }, [user, navigate])
+  // Redirect without flashing the page to authenticated users
+  if (user === undefined) return null
+  if (user) return <Navigate to="/profile" replace />
 
   useEffect(() => {
     const handler = (e) => {

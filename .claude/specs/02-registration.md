@@ -1,7 +1,7 @@
-# Spec: Registration
+﻿# Spec: Registration
 
 ## Overview
-Implement user registration so new visitors can create a Spendly account. This step upgrades the existing stub `GET /register` route into a fully functional form that accepts a POST, validates input, hashes the password, and inserts a new row into the `users` table. On success the user is shown with a success message and then redirected to the login page. This is the entry point for all authenticated features that follow.
+Implement user registration so new visitors can create a Budgetly account. This step upgrades the existing stub `GET /register` route into a fully functional form that accepts a POST, validates input, hashes the password, and inserts a new row into the `users` table. On success the user is shown with a success message and then redirected to the login page. This is the entry point for all authenticated features that follow.
 
 ## Depends on
 - Step 01 — Database setup (`users` table, `get_db()`)
@@ -56,5 +56,5 @@ No new dependencies. Uses `werkzeug.security` (already installed) and Flask's bu
 - [ ] Submitting with mismatched passwords re-renders the form with an error message, no DB insert
 - [ ] Submitting with an already-registered email re-renders the form with "Email already registered" error
 - [ ] Submitting with any empty field re-renders the form with a validation error
-- [ ] Password is stored as a hash — never plaintext — verifiable by inspecting `spendly.db`
+- [ ] Password is stored as a hash — never plaintext — verifiable by inspecting `budgetly.db`
 - [ ] No duplicate user is created on repeated valid submissions with the same email

@@ -16,7 +16,7 @@ def test_get_user_by_id_returns_correct_fields(app):
         user = get_user_by_id(1)
     assert user is not None
     assert user["name"] == "Demo User"
-    assert user["email"] == "demo@spendly.com"
+    assert user["email"] == "demo@budgetly.com"
     assert user["initials"] == "DU"
     assert user["member_since"]  # non-empty "Month YYYY" string
 
@@ -153,7 +153,7 @@ def test_profile_shows_real_user_name(auth_client):
 
 def test_profile_shows_real_user_email(auth_client):
     resp = auth_client.get("/profile")
-    assert b"demo@spendly.com" in resp.data
+    assert b"demo@budgetly.com" in resp.data
 
 
 def test_profile_shows_rupee_symbol(auth_client):

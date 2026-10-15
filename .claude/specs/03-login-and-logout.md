@@ -1,4 +1,4 @@
-# Spec: Login and Logout
+﻿# Spec: Login and Logout
 
 ## Overview
 This step makes the login and logout flow fully functional. The existing `GET /login`
@@ -14,7 +14,7 @@ to be configured.
 ## Depends on
 - **Step 01 — Database Setup**: `users` table with `email` and `password_hash` columns
   must exist. `get_db()` from `database/db.py` must be available.
-- **Step 02 — Registration**: At minimum, the seeded demo user (`demo@spendly.com` /
+- **Step 02 — Registration**: At minimum, the seeded demo user (`demo@budgetly.com` /
   `demo123`) must be present so login can be tested without a working registration form.
 
 ---
@@ -96,7 +96,7 @@ No new pip packages. Uses:
 ## Definition of done
 
 - [ ] Visiting `/login` renders the login form (GET still works)
-- [ ] Submitting the form with `demo@spendly.com` / `demo123` redirects to `/profile`
+- [ ] Submitting the form with `demo@budgetly.com` / `demo123` redirects to `/profile`
 - [ ] Submitting with a wrong password re-renders the login page with an error message
 - [ ] Submitting with an unknown email also re-renders with the same generic error message
 - [ ] After a successful login, `session['user_id']` is set to the user's database ID

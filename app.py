@@ -17,7 +17,7 @@ from database.queries import (
 )
 
 app = Flask(__name__)
-app.secret_key = 'spendly-dev-secret-key'
+app.secret_key = 'Budgetly-dev-secret-key'
 
 
 # ------------------------------------------------------------------ #

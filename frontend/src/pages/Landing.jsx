@@ -40,46 +40,58 @@ export default function Landing() {
           </div>
         </div>
         <div className="hero-visual">
-          <div className="mock-card">
-            <div className="mock-dots">
-              <span className="dot dot-red"></span>
-              <span className="dot dot-yellow"></span>
-              <span className="dot dot-green"></span>
+          <div className="mock-frame">
+            <div className="mock-frame-bar">
+              <div className="mock-dots">
+                <span className="dot dot-red"></span>
+                <span className="dot dot-yellow"></span>
+                <span className="dot dot-green"></span>
+              </div>
+              <span className="mock-frame-url">budgetly.app/profile</span>
             </div>
-            <div className="mock-stats">
-              <div className="mock-stat">
-                <span className="mock-stat-label">This month</span>
-                <span className="mock-stat-value">₹18,240</span>
-                <span className="mock-stat-change positive">+12% vs last</span>
+            <div className="mock-card">
+              <div className="mock-card-header">
+                <span className="mock-card-title">Dashboard</span>
+                <span className="mock-card-sub">Welcome back, Demo User</span>
               </div>
-              <div className="mock-stat">
-                <span className="mock-stat-label">Budget left</span>
-                <span className="mock-stat-value">₹6,760</span>
-                <span className="mock-stat-change positive">43% remaining</span>
-              </div>
-              <div className="mock-stat">
-                <span className="mock-stat-label">Transactions</span>
-                <span className="mock-stat-value">34</span>
-                <span className="mock-stat-change muted">this month</span>
-              </div>
-            </div>
-            <div className="mock-bars">
-              <div className="mock-bar-row">
-                <span className="mock-cat">Food</span>
-                <div className="mock-bar-track">
-                  <div className="mock-bar mock-bar-food" style={{ width: '68%' }}></div>
+              <div className="mock-stats">
+                <div className="mock-stat">
+                  <span className="mock-stat-label">Total Spent</span>
+                  <span className="mock-stat-value">₹18,240</span>
+                  <span className="mock-stat-change muted">all time</span>
+                </div>
+                <div className="mock-stat">
+                  <span className="mock-stat-label">Transactions</span>
+                  <span className="mock-stat-value">34</span>
+                  <span className="mock-stat-change muted">entries logged</span>
+                </div>
+                <div className="mock-stat">
+                  <span className="mock-stat-label">Top Category</span>
+                  <span className="mock-stat-value mock-stat-value--cat">Food</span>
+                  <span className="mock-stat-change muted">highest spend</span>
                 </div>
               </div>
-              <div className="mock-bar-row">
-                <span className="mock-cat">Travel</span>
-                <div className="mock-bar-track">
-                  <div className="mock-bar mock-bar-travel" style={{ width: '48%' }}></div>
+              <div className="mock-bars">
+                <div className="mock-bar-row">
+                  <span className="mock-cat">Food</span>
+                  <div className="mock-bar-track">
+                    <div className="mock-bar mock-bar-food mock-bar--animated" style={{ '--bar-w': '68%' }}></div>
+                  </div>
+                  <span className="mock-bar-pct">68%</span>
                 </div>
-              </div>
-              <div className="mock-bar-row">
-                <span className="mock-cat">Bills</span>
-                <div className="mock-bar-track">
-                  <div className="mock-bar mock-bar-bills" style={{ width: '35%' }}></div>
+                <div className="mock-bar-row">
+                  <span className="mock-cat">Transport</span>
+                  <div className="mock-bar-track">
+                    <div className="mock-bar mock-bar-travel mock-bar--animated" style={{ '--bar-w': '48%' }}></div>
+                  </div>
+                  <span className="mock-bar-pct">48%</span>
+                </div>
+                <div className="mock-bar-row">
+                  <span className="mock-cat">Bills</span>
+                  <div className="mock-bar-track">
+                    <div className="mock-bar mock-bar-bills mock-bar--animated" style={{ '--bar-w': '35%' }}></div>
+                  </div>
+                  <span className="mock-bar-pct">35%</span>
                 </div>
               </div>
             </div>

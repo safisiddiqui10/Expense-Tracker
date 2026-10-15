@@ -75,21 +75,21 @@ export default function Landing() {
                 <div className="mock-bar-row">
                   <span className="mock-cat">Food</span>
                   <div className="mock-bar-track">
-                    <div className="mock-bar mock-bar-food mock-bar--animated" style={{ '--bar-w': '68%' }}></div>
+                    <div className="mock-bar mock-bar-food mock-bar--animated" style={{ '--bar-w': '68%', '--bar-delay': '0.1s' }}></div>
                   </div>
                   <span className="mock-bar-pct">68%</span>
                 </div>
                 <div className="mock-bar-row">
                   <span className="mock-cat">Transport</span>
                   <div className="mock-bar-track">
-                    <div className="mock-bar mock-bar-travel mock-bar--animated" style={{ '--bar-w': '48%' }}></div>
+                    <div className="mock-bar mock-bar-travel mock-bar--animated" style={{ '--bar-w': '48%', '--bar-delay': '0.25s' }}></div>
                   </div>
                   <span className="mock-bar-pct">48%</span>
                 </div>
                 <div className="mock-bar-row">
                   <span className="mock-cat">Bills</span>
                   <div className="mock-bar-track">
-                    <div className="mock-bar mock-bar-bills mock-bar--animated" style={{ '--bar-w': '35%' }}></div>
+                    <div className="mock-bar mock-bar-bills mock-bar--animated" style={{ '--bar-w': '35%', '--bar-delay': '0.4s' }}></div>
                   </div>
                   <span className="mock-bar-pct">35%</span>
                 </div>

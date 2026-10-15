@@ -1,75 +1,71 @@
-import sqlite3
 import os
+import psycopg2
+import psycopg2.extras
 from werkzeug.security import generate_password_hash
 
-# WARNING: SQLite writes to the local filesystem.
-# On Vercel serverless functions the filesystem is ephemeral — data is lost on container recycle.
-# For production, set DATABASE_URL to a Turso (libSQL) or other persistent connection string.
-DB_PATH = os.environ.get(
-    "DATABASE_URL",
-    os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "budgetly.db"),
-)
+DATABASE_URL = os.environ.get("DATABASE_URL")
 
 
 def get_db():
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA foreign_keys = ON")
-    return conn
+    return psycopg2.connect(DATABASE_URL)
 
 
 def init_db():
     conn = get_db()
-    conn.executescript("""
+    conn.autocommit = True
+    cur = conn.cursor()
+    cur.execute("""
         CREATE TABLE IF NOT EXISTS users (
-            id           INTEGER PRIMARY KEY AUTOINCREMENT,
-            name         TEXT    NOT NULL,
-            email        TEXT    UNIQUE NOT NULL,
-            password_hash TEXT   NOT NULL,
-            created_at   TEXT    DEFAULT (datetime('now'))
-        );
-
+            id            SERIAL PRIMARY KEY,
+            name          TEXT        NOT NULL,
+            email         TEXT UNIQUE NOT NULL,
+            password_hash TEXT        NOT NULL,
+            created_at    TIMESTAMP   DEFAULT NOW()
+        )
+    """)
+    cur.execute("""
         CREATE TABLE IF NOT EXISTS expenses (
-            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            id          SERIAL  PRIMARY KEY,
             user_id     INTEGER NOT NULL REFERENCES users(id),
             amount      REAL    NOT NULL,
             category    TEXT    NOT NULL,
             date        TEXT    NOT NULL,
             description TEXT,
-            created_at  TEXT    DEFAULT (datetime('now'))
-        );
+            created_at  TIMESTAMP DEFAULT NOW()
+        )
     """)
-    conn.commit()
+    cur.close()
     conn.close()
 
 
 def seed_db():
     conn = get_db()
-    count = conn.execute("SELECT COUNT(*) FROM users").fetchone()[0]
-    if count > 0:
+    cur = conn.cursor()
+    cur.execute("SELECT COUNT(*) FROM users")
+    if cur.fetchone()[0] > 0:
+        cur.close()
         conn.close()
         return
 
-    cursor = conn.cursor()
-    cursor.execute(
-        "INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)",
+    cur.execute(
+        "INSERT INTO users (name, email, password_hash) VALUES (%s, %s, %s) RETURNING id",
         ("Demo User", "demo@budgetly.com", generate_password_hash("demo123")),
     )
-    user_id = cursor.lastrowid
-
-    expenses = [
-        (user_id, 12.50,  "Food",          "2026-10-01", "Lunch at cafe"),
-        (user_id, 35.00,  "Transport",     "2026-10-03", "Monthly bus pass"),
-        (user_id, 120.00, "Bills",         "2026-10-05", "Electricity bill"),
-        (user_id, 45.00,  "Health",        "2026-10-07", "Pharmacy"),
-        (user_id, 25.00,  "Entertainment", "2026-10-09", "Cinema tickets"),
-        (user_id, 89.99,  "Shopping",      "2026-10-11", "Clothing"),
-        (user_id, 8.75,   "Other",         "2026-10-13", "Miscellaneous"),
-        (user_id, 18.40,  "Food",          "2026-10-14", "Groceries"),
-    ]
-    cursor.executemany(
-        "INSERT INTO expenses (user_id, amount, category, date, description) VALUES (?, ?, ?, ?, ?)",
-        expenses,
+    user_id = cur.fetchone()[0]
+    cur.executemany(
+        "INSERT INTO expenses (user_id, amount, category, date, description)"
+        " VALUES (%s, %s, %s, %s, %s)",
+        [
+            (user_id, 12.50,  "Food",          "2026-10-01", "Lunch at cafe"),
+            (user_id, 35.00,  "Transport",     "2026-10-03", "Monthly bus pass"),
+            (user_id, 120.00, "Bills",         "2026-10-05", "Electricity bill"),
+            (user_id, 45.00,  "Health",        "2026-10-07", "Pharmacy"),
+            (user_id, 25.00,  "Entertainment", "2026-10-09", "Cinema tickets"),
+            (user_id, 89.99,  "Shopping",      "2026-10-11", "Clothing"),
+            (user_id, 8.75,   "Other",         "2026-10-13", "Miscellaneous"),
+            (user_id, 18.40,  "Food",          "2026-10-14", "Groceries"),
+        ],
     )
     conn.commit()
+    cur.close()
     conn.close()

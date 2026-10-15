@@ -2,6 +2,8 @@ import math
 import os
 from datetime import datetime
 
+import psycopg2.extras
+
 from flask import Flask, jsonify, session, request
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -20,6 +22,13 @@ from api.database.queries import (
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "Budgetly-dev-secret-key")
+
+if os.environ.get("VERCEL"):
+    app.config.update(
+        SESSION_COOKIE_SECURE=True,
+        SESSION_COOKIE_HTTPONLY=True,
+        SESSION_COOKIE_SAMESITE="Lax",
+    )
 
 VALID_CATEGORIES = ["Food", "Transport", "Bills", "Health", "Entertainment", "Shopping", "Other"]
 
@@ -44,7 +53,10 @@ def api_login():
         return jsonify({"error": "Email and password are required."}), 400
 
     db = get_db()
-    user_row = db.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchone()
+    cursor = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
+    user_row = cursor.fetchone()
+    cursor.close()
     db.close()
 
     if not user_row or not check_password_hash(user_row["password_hash"], password):
@@ -70,18 +82,21 @@ def api_register():
         return jsonify({"error": "Password must be at least 8 characters."}), 400
 
     db = get_db()
-    existing = db.execute("SELECT id FROM users WHERE email = ?", (email,)).fetchone()
+    cursor = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cursor.execute("SELECT id FROM users WHERE email = %s", (email,))
+    existing = cursor.fetchone()
     if existing:
+        cursor.close()
         db.close()
         return jsonify({"error": "An account with that email already exists."}), 400
 
-    cursor = db.cursor()
     cursor.execute(
-        "INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)",
+        "INSERT INTO users (name, email, password_hash) VALUES (%s, %s, %s) RETURNING id",
         (name, email, generate_password_hash(password)),
     )
-    new_id = cursor.lastrowid
+    new_id = cursor.fetchone()["id"]
     db.commit()
+    cursor.close()
     db.close()
 
     session["user_id"] = new_id

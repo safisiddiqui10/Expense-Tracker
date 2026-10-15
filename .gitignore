@@ -7,3 +7,5 @@ __pycache__/
 .env
 .DS_Store
 .claude/plans/
+frontend/node_modules/
+frontend/dist/

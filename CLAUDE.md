@@ -2,116 +2,144 @@
 
 ## Project overview
 
-Budgetly is a lightweight personal expense tracker built with Flask and SQLite.
+Budgetly is a personal expense tracker — Flask JSON API backend + React (Vite) frontend.
 
 ---
 
 ## Architecture
 ```
 Budgetly/
-├── app.py              # All routes — single file, no blueprints
-├── database/
-│   └── db.py           # SQLite helpers: get_db(), init_db(), seed_db()
-├── templates/
-│   ├── base.html       # Shared layout — all templates must extend this
-│   └── *.html          # One template per page
-├── static/
-│   ├── css/
-│   │   ├── style.css       # Global styles
-│   │   └── landing.css     # Landing-page-only styles
-│   └── js/
-│       └── main.js         # Vanilla JS only
-└── requirements.txt
+├── api/
+│   ├── index.py              # Flask JSON API — all routes
+│   ├── requirements.txt      # flask, werkzeug
+│   └── database/
+│       ├── db.py             # get_db(), init_db(), seed_db() — DB_PATH from env
+│       └── queries.py        # All SQL helpers (parameterized queries only)
+├── frontend/
+│   ├── index.html            # Google Fonts CDN links, div#root
+│   ├── vite.config.js        # Proxy /api → http://localhost:5001
+│   ├── package.json
+│   └── src/
+│       ├── main.jsx          # Entry — imports style.css globally
+│       ├── App.jsx           # BrowserRouter + Routes
+│       ├── api/client.js     # fetch wrappers for all /api/* endpoints
+│       ├── context/AuthContext.jsx
+│       ├── components/       # Layout, Navbar, Footer, ProtectedRoute
+│       ├── pages/            # One .jsx per page
+│       └── styles/           # style.css, landing.css, profile.css, analytics.css
+└── vercel.json               # Vercel build + SPA rewrite config
 ```
 
 **Where things belong:**
-- New routes → `app.py` only, no blueprints
-- DB logic → `database/db.py` only, never inline in routes
-- New pages → new `.html` file extending `base.html`
-- Page-specific styles → new `.css` file, not inline `<style>` tags
+- New API endpoints → `api/index.py` only
+- DB logic → `api/database/queries.py` only, never inline in routes
+- New pages → new `.jsx` in `frontend/src/pages/`
+- Page-specific styles → new `.css` in `frontend/src/styles/`, imported in the page component
+- Shared components → `frontend/src/components/`
 
 ---
 
 ## Code style
 
-- Python: PEP 8, snake_case for all variables and functions
-- Templates: Jinja2 with `url_for()` for every internal link — never hardcode URLs
-- Route functions: one responsibility only — fetch data, render template, done
-- DB queries: always use parameterized queries (`?` placeholders) — never f-strings in SQL
-- Error handling: use `abort()` for HTTP errors, not bare `return "error string"`
+### Python (api/)
+- PEP 8, snake_case for all identifiers
+- DB queries: always parameterized (`?` placeholders) — never f-strings in SQL
+- Auth guard: use `require_auth()` helper at the top of every protected route
+- Return JSON always: `jsonify({...})` — never render templates
+- FK enforcement: `get_db()` runs `PRAGMA foreign_keys = ON` on every connection
+
+### React (frontend/)
+- Functional components + hooks only
+- Navigation: always `<Link>` or `useNavigate()` — never `window.location` or `<a href>`
+- Forms: fully controlled inputs (value + onChange on every field)
+- Auth state: read from `useAuth()` (AuthContext) — never from localStorage directly
+- Flash messages: pass via router state `navigate('/profile', { state: { flash: '...' } })`
 
 ---
 
 ## Tech constraints
 
-- **Flask only** — no FastAPI, no Django, no other web frameworks
-- **SQLite only** — no PostgreSQL, no SQLAlchemy ORM, no external DB
-- **Vanilla JS only** — no React, no jQuery, no npm packages
-- **No new pip packages** — work within `requirements.txt` as-is unless explicitly told otherwise
-- Python 3.10+ assumed — f-strings and `match` statements are fine
+- **Flask only** — no FastAPI, no Django
+- **SQLite only** — no PostgreSQL, no SQLAlchemy ORM
+- **React + Vite** — no other frontend frameworks; vanilla CSS (no Tailwind, no CSS-in-JS)
+- **No new pip packages** without flagging — keep `api/requirements.txt` in sync
+- **No new npm packages** without flagging — keep `frontend/package.json` in sync
+- Python 3.10+ assumed
 
 ---
 
 ## Subagent Policy
-- Always use a builtin explore subagent for codebase exploration 
+- Always use a builtin explore subagent for codebase exploration
   before implementing any new feature
-- Always use a subagent to verify test results 
+- Always use a subagent to verify test results
   after any implementation
-- When asked to plan, delegate codebase research 
+- When asked to plan, delegate codebase research
   to a subagent before presenting the plan
-- always use a builtin plan subagent in plan mode
+- Always use a builtin plan subagent in plan mode
 
 ---
 
 ## Commands
 ```bash
-# Setup
+# Setup — Python
 python -m venv venv
-source venv/bin/activate          # Windows: venv\Scripts\activate
-pip install -r requirements.txt
+venv\Scripts\activate        # Windows
+pip install -r api/requirements.txt
 
-# Run dev server (port 5001)
-python app.py
+# Run Flask JSON API (Terminal 1)
+python -m api.index          # serves on port 5001
 
-# Run all tests
-pytest
+# Setup — React
+cd frontend
+npm install
 
-# Run a specific test file
-pytest tests/test_foo.py
+# Run Vite dev server (Terminal 2)
+cd frontend
+npm run dev                  # serves on http://localhost:5173
 
-# Run a specific test by name
-pytest -k "test_name"
-
-# Run tests with output visible
-pytest -s
+# Build for production
+cd frontend
+npm run build                # outputs to frontend/dist/
 ```
 
 ---
 
-## Implemented vs stub routes
+## API routes
 
-| Route | Status |
-|---|---|
-| `GET /` | Implemented — renders `landing.html` |
-| `GET /register` | Implemented — renders `register.html` |
-| `GET /login` | Implemented — renders `login.html` |
-| `GET /logout` | Stub — Step 3 |
-| `GET /profile` | Stub — Step 4 |
-| `GET /expenses/add` | Stub — Step 7 |
-| `GET /expenses/<id>/edit` | Stub — Step 8 |
-| `GET /expenses/<id>/delete` | Stub — Step 9 |
+| Method | Path | Auth | Notes |
+|--------|------|------|-------|
+| `POST` | `/api/auth/login` | — | Returns user dict |
+| `POST` | `/api/auth/register` | — | Validates + creates user |
+| `POST` | `/api/auth/logout` | — | Clears session |
+| `GET` | `/api/auth/me` | ✓ | Returns current user or 401 |
+| `GET` | `/api/profile` | ✓ | Query params: category, date_from, date_to |
+| `GET` | `/api/expenses/<id>` | ✓ | Ownership-checked |
+| `POST` | `/api/expenses` | ✓ | Add expense |
+| `PUT` | `/api/expenses/<id>` | ✓ | Edit expense |
+| `DELETE` | `/api/expenses/<id>` | ✓ | Delete expense |
 
-**Do not implement a stub route unless the active task explicitly targets that step.**
+## React routes
+
+| Path | Component | Protected |
+|------|-----------|-----------|
+| `/` | Landing | — |
+| `/login` | Login | — |
+| `/register` | Register | — |
+| `/terms` | Terms | — |
+| `/privacy` | Privacy | — |
+| `/profile` | Profile | ✓ |
+| `/analytics` | Analytics | ✓ |
+| `/expenses/add` | AddExpense | ✓ |
+| `/expenses/:id/edit` | EditExpense | ✓ |
 
 ---
 
 ## Warnings and things to avoid
 
-- **Never use raw string returns for stub routes** once a step is implemented — always render a template
-- **Never hardcode URLs** in templates — always use `url_for()`
-- **Never put DB logic in route functions** — it belongs in `database/db.py`
-- **Never install new packages** mid-feature without flagging it — keep `requirements.txt` in sync
-- **Never use JS frameworks** — the frontend is intentionally vanilla
-- **`database/db.py` is currently empty** — do not assume helpers exist until the step that implements them
-- **FK enforcement is manual** — SQLite foreign keys are off by default; `get_db()` must run `PRAGMA foreign_keys = ON` on every connection
-- The app runs on **port 5001**, not the Flask default 5000 — don't change this
+- **Never put DB logic in route functions** — it belongs in `api/database/queries.py`
+- **Never hardcode URLs** in React — always use `<Link>` or `navigate()`
+- **Never install packages** mid-feature without flagging it
+- **FK enforcement is manual** — `get_db()` must run `PRAGMA foreign_keys = ON`
+- **SQLite will not persist on Vercel** — ephemeral filesystem; use Turso/Neon for production
+- **Secret key** must come from `SECRET_KEY` env var — never hardcode in production
+- The Flask API runs on **port 5001**; the Vite dev server on **port 5173**

@@ -25,7 +25,7 @@ export default function Profile() {
     if (location.state?.flash) {
       navigate(location.pathname + location.search, { replace: true, state: {} })
     }
-  }, [])
+  }, [location.state?.flash, location.pathname, location.search, navigate])
 
   useEffect(() => {
     api.getProfile({ category, date_from: dateFrom, date_to: dateTo })
@@ -61,7 +61,13 @@ export default function Profile() {
     }
   }
 
-  if (!data) return null
+  if (!data) return (
+    <div className="profile-page">
+      <div className="profile-inner" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
+        <p style={{ color: 'var(--ink-muted)', fontFamily: 'var(--font-body)' }}>Loading…</p>
+      </div>
+    </div>
+  )
 
   const { user, expenses, stats, categories, filter_categories, filter_active } = data
 

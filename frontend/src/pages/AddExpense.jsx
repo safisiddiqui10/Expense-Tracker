@@ -18,7 +18,7 @@ export default function AddExpense() {
     setError(null)
     try {
       await api.addExpense(form)
-      navigate('/profile')
+      navigate('/profile', { state: { flash: 'Expense added successfully.' } })
     } catch (err) {
       setError(err.error || 'Could not save expense.')
     }

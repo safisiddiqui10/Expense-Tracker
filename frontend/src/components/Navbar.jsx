@@ -5,7 +5,7 @@ export default function Navbar() {
   const { user, logout } = useAuth()
   const { pathname } = useLocation()
 
-  const activeClass = (path) => pathname === path ? 'nav-link--active' : ''
+  const activeClass = (path) => pathname === path ? 'nav-link--active' : undefined
 
   return (
     <nav className="navbar">
@@ -24,8 +24,8 @@ export default function Navbar() {
             </>
           ) : (
             <>
-              <Link to="/login">Sign in</Link>
-              <Link to="/register" className="nav-cta">Get started</Link>
+              <Link to="/login" className={activeClass('/login')}>Sign in</Link>
+              <Link to="/register" className={`nav-cta${pathname === '/register' ? ' nav-link--active' : ''}`}>Get started</Link>
             </>
           )}
         </div>

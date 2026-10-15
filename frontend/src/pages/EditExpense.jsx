@@ -37,7 +37,13 @@ export default function EditExpense() {
     }
   }
 
-  if (!form) return null
+  if (!form) return (
+    <div className="form-page">
+      <div className="form-page-inner" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
+        <p style={{ color: 'var(--ink-muted)', fontFamily: 'var(--font-body)' }}>Loading…</p>
+      </div>
+    </div>
+  )
 
   return (
     <div className="form-page">

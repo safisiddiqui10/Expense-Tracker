@@ -18,14 +18,23 @@ export default function Profile() {
   const [localDateFrom, setLocalDateFrom] = useState(dateFrom)
   const [localDateTo, setLocalDateTo] = useState(dateTo)
 
+  // Keep filter inputs in sync when URL params change (e.g. browser back/forward)
+  useEffect(() => {
+    setLocalCategory(category)
+    setLocalDateFrom(dateFrom)
+    setLocalDateTo(dateTo)
+  }, [category, dateFrom, dateTo])
+
   const [data, setData] = useState(null)
   const [flash, setFlash] = useState(location.state?.flash || null)
 
+  // Clear flash from history state so refresh doesn't re-show it
   useEffect(() => {
     if (location.state?.flash) {
       navigate(location.pathname + location.search, { replace: true, state: {} })
     }
-  }, [location.state?.flash, location.pathname, location.search, navigate])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     api.getProfile({ category, date_from: dateFrom, date_to: dateTo })
@@ -150,7 +159,7 @@ export default function Profile() {
               </div>
               <div className="stat-card">
                 <span className="stat-label">Top Category</span>
-                <span className="stat-value stat-value--category">{stats.top_category}</span>
+                <span className="stat-value stat-value--category">{stats.top_category || '—'}</span>
                 <span className="stat-sub">highest spending</span>
               </div>
             </div>

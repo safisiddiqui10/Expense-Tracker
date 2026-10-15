@@ -9,10 +9,7 @@ export default function Landing() {
   const { user } = useAuth()
   const [isOpen, setIsOpen] = useState(false)
 
-  // Redirect without flashing the page to authenticated users
-  if (user === undefined) return null
-  if (user) return <Navigate to="/profile" replace />
-
+  // All hooks must come before any early returns
   useEffect(() => {
     const handler = (e) => {
       if (e.key === 'Escape' && isOpen) setIsOpen(false)
@@ -20,6 +17,9 @@ export default function Landing() {
     document.addEventListener('keydown', handler)
     return () => document.removeEventListener('keydown', handler)
   }, [isOpen])
+
+  if (user === undefined) return null
+  if (user) return <Navigate to="/profile" replace />
 
   return (
     <>

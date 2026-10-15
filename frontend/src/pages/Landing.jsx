@@ -61,6 +61,11 @@ export default function Landing() {
                 <span className="mock-stat-value">34</span>
                 <span className="mock-stat-change muted">this month</span>
               </div>
+              <div className="mock-stat">
+                <span className="mock-stat-label">Top Category</span>
+                <span className="mock-stat-value">Food</span>
+                <span className="mock-stat-change muted">highest spend</span>
+              </div>
             </div>
             <div className="mock-bars">
               <div className="mock-bar-row">

@@ -13,6 +13,7 @@ from database.queries import (
     insert_expense,
     get_expense_by_id,
     update_expense,
+    delete_expense as db_delete_expense,
 )
 
 app = Flask(__name__)
@@ -245,9 +246,15 @@ def edit_expense(id):
                            expense_id=id)
 
 
-@app.route("/expenses/<int:id>/delete")
+@app.route("/expenses/<int:id>/delete", methods=["POST"])
 def delete_expense(id):
-    return "Delete expense — coming in Step 9"
+    if not session.get("user_id"):
+        return redirect(url_for("login"))
+    expense = get_expense_by_id(id, session["user_id"])
+    if expense is None:
+        abort(404)
+    db_delete_expense(id, session["user_id"])
+    return redirect(url_for("profile"))
 
 
 with app.app_context():

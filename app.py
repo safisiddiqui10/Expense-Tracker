@@ -1,3 +1,4 @@
+import math
 from datetime import datetime
 
 from flask import Flask, render_template, session, redirect, url_for, request, abort
@@ -9,6 +10,7 @@ from database.queries import (
     get_distinct_categories,
     get_summary_stats,
     get_category_breakdown,
+    insert_expense,
 )
 
 app = Flask(__name__)
@@ -131,9 +133,58 @@ def analytics():
     return render_template("analytics.html")
 
 
-@app.route("/expenses/add")
+VALID_CATEGORIES = ["Food", "Transport", "Bills", "Health", "Entertainment", "Shopping", "Other"]
+
+
+@app.route("/expenses/add", methods=["GET", "POST"])
 def add_expense():
-    return "Add expense — coming in Step 7"
+    if not session.get("user_id"):
+        return redirect(url_for("login"))
+
+    if request.method == "POST":
+        raw_amount = request.form.get("amount", "").strip()
+        category = request.form.get("category", "").strip()
+        date_str = request.form.get("date", "").strip()
+        description = request.form.get("description", "").strip() or None
+
+        error = None
+        amount = None
+
+        try:
+            amount = float(raw_amount)
+            if not math.isfinite(amount) or amount <= 0:
+                raise ValueError
+        except ValueError:
+            error = "Amount must be a positive number."
+
+        if not error and category not in VALID_CATEGORIES:
+            error = "Please select a valid category."
+
+        if not error:
+            try:
+                datetime.strptime(date_str, "%Y-%m-%d")
+            except ValueError:
+                error = "Please enter a valid date (YYYY-MM-DD)."
+
+        if error:
+            return render_template(
+                "add_expense.html",
+                error=error,
+                categories=VALID_CATEGORIES,
+                form={"amount": raw_amount, "category": category,
+                      "date": date_str, "description": description or ""},
+            )
+
+        insert_expense(session["user_id"], amount, category, date_str, description)
+        return redirect(url_for("profile"))
+
+    today = datetime.today().strftime("%Y-%m-%d")
+    return render_template(
+        "add_expense.html",
+        categories=VALID_CATEGORIES,
+        form={"amount": "", "category": "", "date": today, "description": ""},
+        error=None,
+    )
 
 
 @app.route("/expenses/<int:id>/edit")

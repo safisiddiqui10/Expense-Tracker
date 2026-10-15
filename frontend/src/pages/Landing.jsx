@@ -39,6 +39,9 @@ export default function Landing() {
             <button type="button" className="btn-ghost" onClick={() => setIsOpen(true)}>See how it works</button>
           </div>
         </div>
+      </section>
+
+      <section className="preview-section">
         <div className="hero-visual">
           <div className="mock-frame">
             <div className="mock-frame-bar">
